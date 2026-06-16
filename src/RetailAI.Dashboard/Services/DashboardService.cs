@@ -25,7 +25,11 @@ public class DashboardService
                 request);
 
         if (!response.IsSuccessStatusCode)
-            return "Unable to connect to CustomerAgent";
+        {
+            var error = await response.Content.ReadAsStringAsync();
+
+            return $"Status={response.StatusCode}\n{error}";
+        }
 
         var result =
             await response.Content.ReadFromJsonAsync<ChatResponse>();

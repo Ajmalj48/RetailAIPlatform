@@ -1,32 +1,35 @@
 using Microsoft.EntityFrameworkCore;
 using RetailAI.InventoryAgent.Data;
 using RetailAI.InventoryAgent.Services;
-using RetailAI.InventoryAgent.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<InventoryDbContext>(options =>
 {
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString(
-            "DefaultConnection"));
+        builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddScoped<InventoryService>();
 
-builder.Services.AddScoped<InventoryTool>();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.MapGet("/", () => "Inventory Agent Running");
 
-app.MapGet("/", () =>
+app.MapGet("/inventory/check",
+async (
+string product,
+InventoryService inventoryService) =>
 {
-    return "Inventory Agent Running";
+    var item =
+        await inventoryService.FindProduct(product);
+
+    if (item == null)
+    {
+        return Results.NotFound("Product not found");
+    }
+
+    return Results.Ok(item);
 });
 
 app.Run();
