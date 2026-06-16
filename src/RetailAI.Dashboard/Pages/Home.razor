@@ -1,0 +1,15 @@
+﻿@page "/"
+
+@using RetailAI.Shared.Models
+@using RetailAI.Dashboard.Components
+@inject RetailAI.Dashboard.Services.AgentStatusService AgentService
+
+<h1>Retail AI Platform</h1>
+
+@foreach (var agent in AgentService.Agents)
+{
+    <AgentCard AgentName="@agent.AgentName"
+               Status="@agent.Status"
+               Response="@agent.Response">
+    </AgentCard>
+}
