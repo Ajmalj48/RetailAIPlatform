@@ -1,0 +1,6 @@
+@RetailAI.CustomerAgent_HostAddress = http://localhost:5031
+
+GET {{RetailAI.CustomerAgent_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
