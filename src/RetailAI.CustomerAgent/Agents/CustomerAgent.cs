@@ -1,40 +1,48 @@
-﻿using Microsoft.SemanticKernel;
+﻿using RetailAI.CustomerAgent.Services;
 
 namespace RetailAI.CustomerAgent.Agents;
 
 public class CustomerAgent
 {
-    private readonly Kernel _kernel;
+    private readonly InventoryApiClient _inventory;
+    private readonly ShippingApiClient _shipping;
+    private readonly RecommendationApiClient _recommendation;
 
-    public CustomerAgent(Kernel kernel)
+    public CustomerAgent(
+        InventoryApiClient inventory,
+        ShippingApiClient shipping,
+        RecommendationApiClient recommendation)
     {
-        _kernel = kernel;
+        _inventory = inventory;
+        _shipping = shipping;
+        _recommendation = recommendation;
     }
 
-    public async Task<string> ProcessRequestAsync(
-        string userRequest)
+    public async Task<string> ProcessRequest(
+        string product,
+        string region)
     {
-        var prompt = $$$"""
-You are an AI Shopping Assistant.
+        var inventory =
+            await _inventory.CheckInventory(product);
 
-User request:
+        var shipping =
+            await _shipping.EstimateDelivery(region);
 
-{{userRequest}}
+        var recommendations =
+            await _recommendation.GetRecommendations(product);
 
-Use the available tools to answer.
+        return $"""
+Inventory
 
-You may need:
+{inventory}
 
-InventoryTool
-ShippingTool
-RecommendationTool
+Shipping
 
-Generate a helpful response.
+{shipping}
+
+Recommendations
+
+{recommendations}
 """;
-
-        var response =
-            await _kernel.InvokePromptAsync(prompt);
-
-        return response.ToString();
     }
 }
