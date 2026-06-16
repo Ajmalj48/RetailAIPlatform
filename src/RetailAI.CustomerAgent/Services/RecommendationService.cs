@@ -4,16 +4,16 @@ namespace RetailAI.CustomerAgent.Services;
 
 public class RecommendationService
 {
-    private readonly HttpClient _client;
+    private readonly HttpClient _httpClient;
 
-    public RecommendationService(HttpClient client)
+    public RecommendationService(HttpClient httpClient)
     {
-        _client = client;
+        _httpClient = httpClient;
     }
 
-    public async Task<RecommendationResponse?> CheckStock()
+    public async Task<RecommendationResponse?> GetRecommendations()
     {
-        return await _client.GetFromJsonAsync<RecommendationResponse>(
-            "https://localhost:7001/inventory/check?product=Dell Laptop");
+        return await _httpClient.GetFromJsonAsync<RecommendationResponse>(
+            "https://localhost:7003/api/Recommendation");
     }
 }

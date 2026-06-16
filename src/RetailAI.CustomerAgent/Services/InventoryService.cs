@@ -4,16 +4,16 @@ namespace RetailAI.CustomerAgent.Services;
 
 public class InventoryService
 {
-    private readonly HttpClient _client;
+    private readonly HttpClient _httpClient;
 
-    public InventoryService(HttpClient client)
+    public InventoryService(HttpClient httpClient)
     {
-        _client = client;
+        _httpClient = httpClient;
     }
 
-    public async Task<InventoryResponse?> CheckStock()
+    public async Task<InventoryResponse?> CheckStock(string product)
     {
-        return await _client.GetFromJsonAsync<InventoryResponse>(
-            "https://localhost:7001/inventory/check?product=Dell Laptop");
+        return await _httpClient.GetFromJsonAsync<InventoryResponse>(
+            $"https://localhost:7001/api/Inventory/check?product={product}");
     }
 }

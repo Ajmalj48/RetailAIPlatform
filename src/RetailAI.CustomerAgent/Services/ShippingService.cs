@@ -4,16 +4,16 @@ namespace RetailAI.CustomerAgent.Services;
 
 public class ShippingService
 {
-    private readonly HttpClient _client;
+    private readonly HttpClient _httpClient;
 
-    public ShippingService(HttpClient client)
+    public ShippingService(HttpClient httpClient)
     {
-        _client = client;
+        _httpClient = httpClient;
     }
 
-    public async Task<ShippingResponse?> CheckStock()
+    public async Task<ShippingResponse?> GetDeliveryEstimate()
     {
-        return await _client.GetFromJsonAsync<ShippingResponse>(
-            "https://localhost:7001/inventory/check?product=Dell Laptop");
+        return await _httpClient.GetFromJsonAsync<ShippingResponse>(
+            "https://localhost:7002/api/Shipping/estimate");
     }
 }
