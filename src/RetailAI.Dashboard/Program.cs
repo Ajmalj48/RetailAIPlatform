@@ -1,5 +1,4 @@
 using RetailAI.Dashboard;
-using RetailAI.Dashboard.Components;
 using RetailAI.Dashboard.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,14 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton<AgentStatusService>();
+builder.Services.AddScoped(sp =>
+{
+    return new HttpClient();
+});
+
+builder.Services.AddScoped<DashboardService>();
 
 var app = builder.Build();
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-}
 
 app.UseStaticFiles();
 

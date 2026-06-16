@@ -1,24 +1,50 @@
-using RetailAI.CustomerAgent.Hubs;
+using RetailAI.CustomerAgent.Agents;
 using RetailAI.CustomerAgent.Services;
+using RetailAI.InventoryAgent.Tools;
+using RetailAI.ShippingAgent.Tools;
+using RetailAI.RecommendationAgent.Tools;
+using RetailAI.CustomerAgent.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddSingleton<KernelService>();
 
-builder.Services.AddHttpClient();
+builder.Services.AddScoped<InventoryTool>();
+builder.Services.AddScoped<ShippingTool>();
+builder.Services.AddScoped<RecommendationTool>();
 
-builder.Services.AddSignalR();
+builder.Services.AddSingleton(sp =>
+{
+    var service =
+        sp.GetRequiredService<KernelService>();
 
-builder.Services.AddSingleton<InventoryService>();
-builder.Services.AddSingleton<ShippingService>();
-builder.Services.AddSingleton<RecommendationService>();
+    return service.CreateKernel(
+        sp.GetRequiredService<InventoryTool>(),
+        sp.GetRequiredService<ShippingTool>(),
+        sp.GetRequiredService<RecommendationTool>());
+});
+
+builder.Services.AddSingleton<CustomerAgent>();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+app.MapGet("/", () =>
+{
+    return "Customer Agent Running";
+});
 
-app.MapControllers();
+app.MapPost("/chat",
+async (ChatRequest request,
+CustomerAgent agent) =>
+{
+    var response =
+        await agent.ProcessRequestAsync(
+            request.UserMessage);
 
-app.MapHub<AgentHub>("/agentHub");
+    return new ChatResponse
+    {
+        Response = response
+    };
+});
 
 app.Run();

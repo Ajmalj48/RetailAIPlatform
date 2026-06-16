@@ -1,15 +1,45 @@
 ﻿@page "/"
 
-@using RetailAI.Shared.Models
-@using RetailAI.Dashboard.Components
-@inject RetailAI.Dashboard.Services.AgentStatusService AgentService
+@inject RetailAI.Dashboard.Services.DashboardService DashboardService
 
-<h1>Retail AI Platform</h1>
+<h1>AI Native Architecture Dashboard</h1>
 
-@foreach (var agent in AgentService.Agents)
+<hr />
+
+<h4>Ask AI</h4>
+
+<textarea class="form-control"
+          rows="4"
+              @bind="message">
+</textarea>
+
+    <br />
+
+    <button class="btn btn-primary"
+            @onclick="Send">
+        Submit
+    </button>
+
+    <hr />
+
+    <h4>Response</h4>
+
+    <div class="card p-3">
+
+        @response
+
+    </div>
+
+@code
 {
-    <AgentCard AgentName="@agent.AgentName"
-               Status="@agent.Status"
-               Response="@agent.Response">
-    </AgentCard>
+    private string message = "";
+
+    private string response = "";
+
+    private async Task Send()
+    {
+        response =
+            await DashboardService.SendMessage(
+                message);
+    }
 }
