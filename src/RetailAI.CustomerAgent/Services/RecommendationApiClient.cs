@@ -9,10 +9,11 @@ public class RecommendationApiClient
         _httpClient = httpClient;
     }
 
-    public async Task<string> GetRecommendations(
-        string product)
+    public async Task<List<string>> GetRecommendations(string product)
     {
-        return await _httpClient.GetStringAsync(
-            $"http://localhost:5178/recommendations?product={product}");
+        return await _httpClient.GetFromJsonAsync<List<string>>
+        (
+            $"http://localhost:5178/recommendations?product={product}"
+        );
     }
 }

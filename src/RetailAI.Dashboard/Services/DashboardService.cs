@@ -1,5 +1,5 @@
-﻿using System.Net.Http.Json;
-using RetailAI.Dashboard.Models;
+﻿using RetailAI.Dashboard.Models;
+using System.Net.Http.Json;
 
 namespace RetailAI.Dashboard.Services;
 
@@ -35,5 +35,13 @@ public class DashboardService
             await response.Content.ReadFromJsonAsync<ChatResponse>();
 
         return result?.Response ?? "";
+    }
+
+    public async Task<FlowState?> GetFlow()
+    {
+        return await _httpClient.GetFromJsonAsync<FlowState>
+        (
+            "http://localhost:5031/flow"
+        );
     }
 }

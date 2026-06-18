@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using RetailAI.Dashboard.Models
 
 @inject RetailAI.Dashboard.Services.DashboardService DashboardService
 
@@ -30,16 +31,108 @@
 
     </div>
 
+    <hr />
+
+    <h4>Agent Execution Flow</h4>
+
+    <div class="card p-3">
+
+        <div class="@GetClass(1)">
+            Customer Agent
+        </div>
+
+        <div class="@GetClass(2)">
+
+            <h5>Ollama AI</h5>
+
+            <pre> @Flow.OllamaJson </pre>
+
+        </div>
+
+        <div class="@GetClass(3)">
+
+            <h5>Inventory Agent → InventoryDB</h5>
+
+            <pre> @Flow.InventoryJson </pre>
+
+        </div>
+
+        <div class="@GetClass(4)">
+
+            <h5>Shipping Agent → ShippingDB</h5>
+
+            <pre> @Flow.ShippingJson </pre>
+
+        </div>
+
+        <div class="@GetClass(5)">
+
+            <h5>Recommendation Agent → RecommendationDB</h5>
+
+            <pre> @Flow.RecommendationJson </pre>
+
+        </div>
+
+    </div>
+
 @code
 {
     private string message = "";
 
     private string response = "";
 
+    private List<string> AgentSteps = new();
+
+    private int CurrentStep = 0;
+
+    private FlowState Flow = new();
+
+    private PeriodicTimer timer =
+        new(TimeSpan.FromMilliseconds(500));
+
+    private bool IsRunning = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _ =
+            Task.Run(async () =>
+            {
+                while (
+                    await timer.WaitForNextTickAsync())
+                                {
+                                    if (!IsRunning)
+                                        continue;
+                    Flow =
+                        await DashboardService.GetFlow()
+                        ?? new();
+
+                    await InvokeAsync(
+                        StateHasChanged);
+                }
+            });
+    }
+
+    private string GetClass(int step)
+    {
+        if (step < Flow.CurrentStep)
+            return "alert alert-success";
+
+        if (step == Flow.CurrentStep)
+            return "alert alert-primary";
+
+        return "alert alert-secondary";
+    }
+
     private async Task Send()
     {
+        IsRunning = true;
+
+        response = "";
+
         response =
             await DashboardService.SendMessage(
                 message);
+
+        IsRunning = false;
     }
 }

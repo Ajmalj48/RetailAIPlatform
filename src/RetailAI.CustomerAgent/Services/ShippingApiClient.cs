@@ -1,4 +1,6 @@
-﻿namespace RetailAI.CustomerAgent.Services;
+﻿using RetailAI.ShippingAgent.Models;
+
+namespace RetailAI.CustomerAgent.Services;
 
 public class ShippingApiClient
 {
@@ -9,10 +11,11 @@ public class ShippingApiClient
         _httpClient = httpClient;
     }
 
-    public async Task<string> EstimateDelivery(
-        string region)
+    public async Task<ShippingRegion> EstimateDelivery(string region)
     {
-        return await _httpClient.GetStringAsync(
-            $"http://localhost:5168/shipping/estimate?region={region}");
+        return await _httpClient.GetFromJsonAsync<ShippingRegion>
+        (
+            $"http://localhost:5168/shipping/estimate?region={region}"
+        );
     }
 }

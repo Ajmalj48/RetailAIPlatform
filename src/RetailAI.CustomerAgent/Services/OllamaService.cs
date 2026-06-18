@@ -23,22 +23,22 @@ public class OllamaService
         string userInput)
     {
         var prompt =
-                    $$"""
-                    Extract the product and region.
+            $$"""
+            Extract the product name and region.
 
-                    Return ONLY JSON.
+            Respond with ONLY valid JSON.
 
-                    Example:
+            No markdown.
+            No explanation.
 
-                    {
-                        "Product":"Dell Inspiron 15",
-                        "Region":"Kerala"
-                    }
+            Example:
 
-                    User request:
+            {"Product":"Dell Inspiron","Region":"Kerala"}
 
-                    {{userInput}}
-                    """;
+            User request:
+
+            {{userInput}}
+            """;
 
         var response = "";
 
@@ -47,17 +47,38 @@ public class OllamaService
             response += token.Response;
         }
 
+        response = response
+    .Replace("```json", "")
+    .Replace("```", "")
+    .Trim();
+
+        Console.WriteLine("OLLAMA RESPONSE:");
+        Console.WriteLine(response);
+
         try
         {
-            return JsonSerializer.Deserialize<QueryInfo>(
-                response,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
+            var start = response.IndexOf('{');
+            var end = response.IndexOf('}') + 1;
+
+            var json = response[start..end];
+
+            Console.WriteLine("JSON USED:");
+            Console.WriteLine(json);
+
+            var info =
+                JsonSerializer.Deserialize<QueryInfo>(
+                    json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+            return info ?? new QueryInfo();
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
+
             return new QueryInfo();
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using RetailAI.InventoryAgent.Models;
+using System.Net.Http.Json;
 
 namespace RetailAI.CustomerAgent.Services;
 
@@ -11,12 +12,11 @@ public class InventoryApiClient
         _httpClient = httpClient;
     }
 
-    public async Task<string> CheckInventory(string product)
+    public async Task<Product> CheckInventory(string product)
     {
-        var response =
-            await _httpClient.GetStringAsync(
-                $"http://localhost:5036/inventory/check?product={product}");
-
-        return response;
+        return await _httpClient.GetFromJsonAsync<Product>
+        (
+            $"http://localhost:5036/inventory/check?product={product}"
+        );
     }
 }

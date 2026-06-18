@@ -16,6 +16,8 @@ builder.Services.AddScoped<CustomerAgent>();
 
 builder.Services.AddScoped<OllamaService>();
 
+builder.Services.AddSingleton<FlowTracker>();
+
 var app = builder.Build();
 
 app.MapGet("/", () =>
@@ -36,6 +38,13 @@ CustomerAgent customerAgent) =>
     {
         Response = response
     };
+});
+
+app.MapGet(
+"/flow",
+(FlowTracker flow) =>
+{
+    return flow.State;
 });
 
 app.Run();
