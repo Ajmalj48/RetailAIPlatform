@@ -7,42 +7,57 @@ public class CustomerAgent
     private readonly InventoryApiClient _inventory;
     private readonly ShippingApiClient _shipping;
     private readonly RecommendationApiClient _recommendation;
+    private readonly OllamaService _ollama;
 
     public CustomerAgent(
         InventoryApiClient inventory,
         ShippingApiClient shipping,
-        RecommendationApiClient recommendation)
+        RecommendationApiClient recommendation,
+        OllamaService ollama)
     {
         _inventory = inventory;
         _shipping = shipping;
         _recommendation = recommendation;
+        _ollama = ollama;
     }
 
     public async Task<string> ProcessRequest(
-        string product,
-        string region)
+        string request)
     {
+        var info =
+            await _ollama.ExtractInformation(request);
+
         var inventory =
-            await _inventory.CheckInventory(product);
+            await _inventory.CheckInventory(
+                info.Product);
 
         var shipping =
-            await _shipping.EstimateDelivery(region);
+            await _shipping.EstimateDelivery(
+                info.Region);
 
-        var recommendations =
-            await _recommendation.GetRecommendations(product);
+        var recommendation =
+            await _recommendation.GetRecommendations(
+                info.Product);
 
-        return $"""
-Inventory
+        return
+$"""
+Product:
+{info.Product}
+
+Region:
+{info.Region}
+
+Inventory:
 
 {inventory}
 
-Shipping
+Shipping:
 
 {shipping}
 
-Recommendations
+Recommendations:
 
-{recommendations}
+{recommendation}
 """;
     }
 }

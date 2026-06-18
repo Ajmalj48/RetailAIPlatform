@@ -14,6 +14,8 @@ builder.Services.AddHttpClient<RecommendationApiClient>();
 
 builder.Services.AddScoped<CustomerAgent>();
 
+builder.Services.AddScoped<OllamaService>();
+
 var app = builder.Build();
 
 app.MapGet("/", () =>
@@ -28,8 +30,7 @@ CustomerAgent customerAgent) =>
 {
     var response =
         await customerAgent.ProcessRequest(
-            request.UserMessage,
-            "Kerala");
+            request.UserMessage);
 
     return new ChatResponse
     {
