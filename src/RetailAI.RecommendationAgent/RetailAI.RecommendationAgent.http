@@ -1,0 +1,6 @@
+@RetailAI.RecommendationAgent_HostAddress = http://localhost:5178
+
+GET {{RetailAI.RecommendationAgent_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
