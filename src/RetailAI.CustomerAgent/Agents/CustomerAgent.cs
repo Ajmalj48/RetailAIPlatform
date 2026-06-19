@@ -249,38 +249,36 @@ public class CustomerAgent
         // Human Readable Response
         //--------------------------------------
         return
-$"""
-Product Found
+            $"""
+            <h4>✅ Product Found</h4>
 
-{inventory.Name}
+            <h5>{inventory.Name}</h5>
 
-Category
---------
-{inventory.Category}
+            <p>
+            <b>Category:</b> {inventory.Category}
+            </p>
 
-Price
------
-₹{inventory.Price}
+            <p>
+            💰 <b>Price:</b> ₹{inventory.Price:N0}
+            </p>
 
-Available Quantity
-------------------
-{inventory.Quantity}
+            <p>
+            📦 <b>Available Quantity:</b> {inventory.Quantity}
+            </p>
 
-Delivery Region
----------------
-{shipping.Region}
+            <h5>🚚 Delivery Details</h5>
 
-Delivery Time
--------------
-{shipping.DeliveryDays} days
+            <p>
+            <b>Region:</b> {shipping.Region}<br/>
+            <b>Delivery Time:</b> {shipping.DeliveryDays} days<br/>
+            <b>Shipping Cost:</b> ₹{shipping.ShippingCost:N0}
+            </p>
 
-Shipping Cost
--------------
-₹{shipping.ShippingCost}
+            <h5>🎁 Recommended Accessories</h5>
 
-Recommended Accessories
------------------------
-• {string.Join("\n• ", recommendations)}
-""";
+            <ul>
+            {string.Join("", recommendations.Select(x => $"<li>{x}</li>"))}
+            </ul>
+            """;
     }
 }
